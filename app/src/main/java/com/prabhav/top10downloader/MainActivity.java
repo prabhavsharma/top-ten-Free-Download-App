@@ -10,7 +10,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.prabhav.top10downloader.Model.ApplicationModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,14 +24,34 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
-    public TextView txtview ;
+   // public TextView txtview ;
+   private String mfilecontents;
+    private Button parse_button;
+    private ListView lstview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        txtview =(TextView) findViewById(R.id.txt_xml);
+       // txtview =(TextView) findViewById(R.id.txt_xml);
+        parse_button =(Button) findViewById(R.id.btnParse);
+        parse_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: ADD Parse Activation Code here
+                ParseApplication parse = new ParseApplication(mfilecontents);
+                parse.process();
+                ArrayAdapter <ApplicationModel> arrayadapter = new ArrayAdapter<ApplicationModel>(MainActivity.this,R.layout.list_item,parse.getApplications());
+lstview.setAdapter(arrayadapter);
+            }
+        });
+
+
+
+
+
+        lstview =(ListView) findViewById(R.id.lstview_parse);
         DownloadData downloadData = new DownloadData();
         downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml");
 
@@ -56,13 +81,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class DownloadData extends AsyncTask<String, Void, String> {
-        private String mfilecontents;
+
 @Override
 protected void onPostExecute(String result)
 {
     super.onPostExecute(result);
-    Log.d("DownloadData","Result was:"+result);
-    txtview.setText(mfilecontents);
+    Log.d("DownloadData", "Result was:" + result);
+    //txtview.setText(mfilecontents);
 }
         @Override
         protected String doInBackground(String... params) {
